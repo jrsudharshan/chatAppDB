@@ -1,13 +1,21 @@
-var redis = require('redis');
-var client = redis.createClient(); //creates a new client
-client.on('connect', function() {
-    console.log('connected');
+var Redis = require('ioredis');
+var redis = new Redis(); 
+redis.on('connect', function(err) {
+    if(err)
+		console.log('Cannot connect to DB');
+	else
+    	console.log('connected to DB');
 });
 
-client.hmset('1', 'name', 'johnny', 'owner', 'true', 'msg', 'hi', 'time', '13:00');
+redis.hmset('1', 'name', 'johnny', 'owner', 'true', 'msg', 'hi', 'time', '13:00');
 
-client.expire('1', 43200);
+redis.expire('1', 105);
 
-client.hgetall('1', function(err, object) {
-    console.log(object.name);
+redis.hgetall('1', function(err, object) {
+    if(err)
+   		console.log('Error in retriving data');
+   	else
+   		console.log(object.msg);
 });
+
+
