@@ -1,5 +1,6 @@
 //Server Side
 var express = require('express'),
+	db = require('db'),
 	app = express(),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server),
@@ -27,6 +28,7 @@ io.sockets.on('connection', function(socket){
 			socket.nickname = data;                   //name exists
 			nicknames.push(socket.nickname);		  //store the name in socket itself
 			updateNicknames();
+			//db.getMessage();
 		}
 	});
 	
