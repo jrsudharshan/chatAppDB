@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" id="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>CHAT APP</title>
+
+    <script   src="https://code.jquery.com/jquery-2.2.4.js"   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="   crossorigin="anonymous"></script>
+    <script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <!--<link href="assets/css/bootstrap.css" rel="stylesheet" />-->
+    <style>
+        #chat{
+           height:500px; 
+        }
+        #contentWrap{
+            display: none;
+        }
+        #us{
+            display: none;
+        }
+    </style>
+
+</head>
+<body style="font-family:Verdana; background:url(https://dl.dropboxusercontent.com/u/159328383/background.jpg);">
+<div class="container">
+<div class="row " style="padding-top:40px;">
+    <h3 class="text-center" id="heading" style="color: tomato">CHAT APPLICATION</h3>
+    <br /><br />
+
+    <div class="col-md-12">
+        <div id ="nickWrap">
+            <p id="nickError"></p>
+            <form class="navbar-form navbar-left" id="setNick">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Enter User name" id="nickname">
+              </div>
+              <button type="submit" class="btn btn-success">Enter Chat</button>
+            </form>
+        </div>
+        <br /><br />
+    </div>
+
+    <div class="col-md-8">
+        <div class="panel panel-info" id="contentWrap">
+            <div class="panel-heading">
+                CHAT ROOM
+            </div>
+            <div class="panel-body">
+                <div id="chat">
+                </div>
+            </div>
+            <div class="panel-footer">
+                <form class="input-group" id="send-message">
+                    <input type="text" class="form-control" placeholder="Enter Message" id="message"/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-warning" type="submit">SEND</button>
+                    </span>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-danger" id="us">
+            <div class="panel-heading">
+                <h5>USERS</h5> <span class="badge" id="tuser"></span>
+            </div>
+            <div class="panel-body">
+                <div id="users"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    jQuery(function($){
+            var socket = io.connect();
+            var $nickForm = $('#setNick');
+            var $nickError = $('#nickError');
+            var $nickBox = $('#nickname');
+            var $users = $('#users');
+            var $messageForm = $('#send-message');
+            var $messageBox = $('#message');
+            var $chat = $('#chat');
+            var $us = $('#us');
+
+            $nickForm.submit(function(e){
+                e.preventDefault();
+                socket.emit('new user', $nickBox.val(), function(data){
+                    if(data){
+                        $('#nickWrap').hide();
+                        $('#contentWrap').show();
+                        $('#us').show();
+                    }
+                    else{
+                        $nickError.html('That username is already taken!  Try again.');
+                    }
+                });
+                $nickBox.val('');
+            });
+            
+            socket.on('usernames', function(data){
+                var html = ''; 
+                for(i=0; i < data.length; i++){
+                    html += data[i] + '<br/>'
+                }
+                $users.html(html);
+            });
+            
+            $messageForm.submit(function(e){
+                e.preventDefault();
+                socket.emit('send message', $messageBox.val());
+                $messageBox.val('');
+            });
+
+            socket.on('new message', function(data){
+                $chat.append('<b>' + data.nick + ': </b>' + data.msg + "<br/>");
+            });
+        });
+</script>
+    
+</body>
+</html>
