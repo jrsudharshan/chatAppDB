@@ -1,6 +1,6 @@
 //Server Side
 var express = require('express'),
-	db = require('db'),
+	db = require('./db'),
 	app = express(),
 	server = require('http').createServer(app),
 	io = require('socket.io').listen(server),
@@ -27,8 +27,8 @@ io.sockets.on('connection', function(socket){
 			callback(true);                        
 			socket.nickname = data;                   //name exists
 			nicknames.push(socket.nickname);		  //store the name in socket itself
+			db.saveUsers(socket.nickname);
 			updateNicknames();
-			//db.getMessage();
 		}
 	});
 	
@@ -38,6 +38,7 @@ io.sockets.on('connection', function(socket){
 
 	socket.on('send message', function(data){
 		io.sockets.emit('new message', {msg: data, nick: socket.nickname});
+		db.saveToDb({msg: data, nick: socket.nickname});
 	});
 	
 	socket.on('disconnect', function(data){

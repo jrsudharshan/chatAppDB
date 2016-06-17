@@ -121,9 +121,21 @@
                 $messageBox.val('');
             });
 
+            socket.on('old message',function(data){
+                //loop and get all messages
+                showMsg(data.nick,data.msg);
+            })
+
             socket.on('new message', function(data){
-                $chat.append('<b>' + data.nick + ': </b>' + data.msg + "<br/>");
+                showMsg(data.nick,data.msg);
             });
+
+            function showMsg(nick,msg){
+                var html = '<b>' + nick + ': </b>' + msg + "<br/>";
+                $chat.append(html);
+            }
+
+
         });
 </script>
     

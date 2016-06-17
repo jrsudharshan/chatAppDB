@@ -8,16 +8,39 @@ redis.on('connect', function(err) {
     	console.log('Connected to DB');
 });
 
-export.saveMessage = function(data,err){
-	redis.hmset('1', 'name', data.nick, 'msg', data.msg);
+exports.saveToDb = function(data,err){
+	if(err){
+		console.log('Error in saving name:msg to DB');
+	}
+	else{
+	redis.hset('1', 'data', data);
 	redis.expire('1', 43200);
+	}	
 }
 
-export.getMessage = function(data,err){
-	redis.hgetall('1', function(err, data) {
+exports.getMessage = function(data,err){
+	redis.hget('1', function(data,err) {
    	if(err)
-    	console.log('Error in retriving data');
+    	console.log('Error in retriving data obj -> name:msg');
     else
     	console.log(data.name +': '+data.msg);
 	});
+}
+
+exports.saveUsers = function(data,err){
+	if(err){
+		console.log('Error in pushing user name on to the DB');
+	}
+	else{
+		redis.lpush('usersInRoom',data.nick);
+	}
+}
+  
+exports.removeUsers = function(data,err){
+	if(err){
+		console.log('Error in deleting user name from the DB');
+	}
+	else{
+		redis.lrem('usersInRoom',data.nick);
+	}
 }
