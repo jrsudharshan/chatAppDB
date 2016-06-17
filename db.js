@@ -8,7 +8,7 @@ redis.on('connect', function(err) {
     	console.log('Connected to DB');
 });
 
-exports.saveToDb = function(data,err){
+exports.saveToDb = function(err,data){
 	if(err){
 		console.log('Error in saving name:msg to DB');
 	}
@@ -18,7 +18,7 @@ exports.saveToDb = function(data,err){
 	}	
 }
 
-exports.getMessage = function(data,err){ 
+exports.getMessage = function(err,data){ 
    	if(err)
     	console.log('Error in retriving data obj -> name:msg');
     else{
@@ -33,7 +33,7 @@ exports.getMessage = function(data,err){
 
 }
 
-exports.saveUsers = function(data,err){
+exports.saveUsers = function(err,data){
 	if(err){
 		console.log('Error in pushing user name on to the DB');
 	}
@@ -42,7 +42,7 @@ exports.saveUsers = function(data,err){
 	}
 }
   
-exports.removeUsers = function(data,err){
+exports.removeUsers = function(err,data){
 	if(err){
 		console.log('Error in deleting user name from the DB');
 	}
