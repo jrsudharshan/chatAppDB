@@ -28,6 +28,7 @@ io.sockets.on('connection', function(socket){
 			socket.nickname = data;                   //name exists
 			nicknames.push(socket.nickname);		  //store the name in socket itself
 			db.saveUsers(socket.nickname);
+			socket.broadcast.emit('join',socket.nickname);
 			updateNicknames();
 		}
 	});
@@ -42,9 +43,14 @@ io.sockets.on('connection', function(socket){
 		db.getMessage(data);
 	});
 	
+	socket.on('typing', function(data){
+	 	socket.broadcast.emit('typing', socket.nickname);
+	});
+
 	socket.on('disconnect', function(data){
 		if(!socket.nickname) return;                 //when user did not enter name and quit 
 		console.log(socket.nickname + " disconnected.");
+		io.sockets.emit('leave',socket.nickname);
 		nicknames.splice(nicknames.indexOf(socket.nickname), 1);
 		updateNicknames();
 

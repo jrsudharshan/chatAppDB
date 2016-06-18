@@ -65,6 +65,8 @@
                         <button class="btn btn-warning" type="submit">SEND</button>
                     </span>
                 </form>
+                <div id="stat">
+                </div>
             </div>
         </div>
     </div>
@@ -91,6 +93,7 @@
             var $messageBox = $('#message');
             var $chat = $('#chat');
             var $us = $('#us');
+            var $stat = ('#stat');
 
             $nickForm.submit(function(e){
                 e.preventDefault();
@@ -106,7 +109,7 @@
                 });
                 $nickBox.val('');
             });
-            
+
             socket.on('usernames', function(data){
                 var html = ''; 
                 for(i=0; i < data.length; i++){
@@ -121,14 +124,34 @@
                 $messageBox.val('');
             });
 
+             $messageBox.focus(function(e) {
+                e.preventDefault();
+                socket.emit('typing', $nickBox.val());
+            });
+
             socket.on('old message',function(data){
-                //loop and get all messages
+                //loop and get all old messages
                 showMsg(data.nick,data.msg);
             })
 
             socket.on('new message', function(data){
                 showMsg(data.nick,data.msg);
             });
+
+            socket.on('join', function(data){
+                var html ='<i>' + data +' joined the chat room'+ '</i>' + "<br/>";
+                $chat.append(html); 
+            })
+
+            socket.on('leave', function(data){
+                var html ='<i>' + data +' left the chat room'+ '</i>' + "<br/>";
+                $chat.append(html); 
+            })
+
+            socket.on('typing', function(data){
+                var html = '<i>' + data +' is typing...'+ '</i>' + "<br/>";
+                $stat.append(html); 
+            })
 
             function showMsg(nick,msg){
                 var html = '<b>' + nick + ': </b>' + msg + "<br/>";

@@ -30,7 +30,6 @@ exports.getMessage = function(err,data){
   			}
 		});
     }
-
 }
 
 exports.saveUsers = function(err,data){
@@ -38,7 +37,7 @@ exports.saveUsers = function(err,data){
 		console.log('Error in pushing user name on to the DB');
 	}
 	else{
-		redis.lpush('usersInRoom',data.nick);
+		redis.lpush('usersInRoom',data.name);
 	}
 }
   
@@ -47,6 +46,6 @@ exports.removeUsers = function(err,data){
 		console.log('Error in deleting user name from the DB');
 	}
 	else{
-		redis.lrem('usersInRoom',data.nick);
+		redis.lrem('usersInRoom',data.name);
 	}
 }
