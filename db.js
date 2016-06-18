@@ -21,14 +21,12 @@ module.exports.saveToDb = function(socketName, userName, message, callback){
     }
     else{
       data = JSON.parse(data);
-    }
-
-    data.messages.push({userName: userName, message: message});
-    var multi = redis.multi();
-    
-    multi.set(socketName, JSON.stringify(data));
-    redis.expire('1', 43200);
-    multi.exec(callback);
+	  data.messages.push({userName: userName, message: message});
+      var multi = redis.multi();
+      multi.set(socketName, JSON.stringify(data));
+      redis.expire('1', 43200);
+      multi.exec(callback);
+  	}
   });
 };
 
